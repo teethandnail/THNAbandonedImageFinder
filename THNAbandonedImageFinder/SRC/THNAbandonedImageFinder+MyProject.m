@@ -176,6 +176,10 @@ static NSString * const kXKSCommonSDKBundleName         = @"Pods/XKSCommonSDK";
                 [code_bundleAndImageDic setObject:imageSet forKey:module];
             }
             
+            if ([imageName containsString:@".png"]) {
+                NSLog(@".m wrong format:[%@][%@]", imageName, mFile);
+            }
+            
             [imageSet addObject:imageName];
         }
     }
@@ -405,6 +409,11 @@ static NSString * const kXKSCommonSDKBundleName         = @"Pods/XKSCommonSDK";
                  @"nav_jibenxinxi",
                  @"nav_hangyexinxi",
                  ];
+    } else if ([name isEqualToString:kCHDMessageModule]) {
+        return @[@"elme",
+                 @"elme_gray",
+                 @"meituan",
+                 @"meituan_gray"];
     }
     
     return @[];

@@ -22,15 +22,29 @@
     
     NSPredicate *png_predicate = [NSPredicate predicateWithFormat:@"SELF ENDSWITH[c] '.png'"];
     NSArray *png_fileArray = [filesArray filteredArrayUsingPredicate:png_predicate];
-    
-    
+    NSString *imageIdentifier = @".imageset";
     
     for (NSString *item in png_fileArray) {
-        NSString *imageName = [item componentsSeparatedByString:@"/"].lastObject;
-        imageName = [imageName stringByReplacingOccurrencesOfString:@"@1x" withString:@""];
-        imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
-        imageName = [imageName stringByReplacingOccurrencesOfString:@"@3x" withString:@""];
-        imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+        NSArray *components = [item componentsSeparatedByString:@"/"];
+        NSString *imageName = nil;
+        if ([item containsString:imageIdentifier]) {
+            // 图片放在Assets.xcassets中，用.imageset中的命名
+            for (NSInteger index = components.count-1; index >= 0; index--) {
+                imageName = components[index];
+                if ([imageName containsString:imageIdentifier]) {
+                    imageName = [imageName stringByReplacingOccurrencesOfString:imageIdentifier withString:@""];
+                    break;
+                }
+            }
+        } else {
+            // 图片不在Assets.xcassets中，则用图片原来的命名
+            imageName = components.lastObject;
+            imageName = [imageName stringByReplacingOccurrencesOfString:@"@1x" withString:@""];
+            imageName = [imageName stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+            imageName = [imageName stringByReplacingOccurrencesOfString:@"@3x" withString:@""];
+            imageName = [imageName stringByReplacingOccurrencesOfString:@".png" withString:@""];
+        }
+        
         [imageSet addObject:imageName];
     }
     
@@ -57,8 +71,7 @@
         NSString *fileData = [NSString stringWithContentsOfFile:xibPath encoding:NSUTF8StringEncoding error:&error];
         
         if (error) {
-            NSLog(@"error : %@", error);
-            NSAssert(!error, @"读文件失败");
+            NSLog(@"读文件失败 : %@", error);
             continue;
         }
         
@@ -66,6 +79,11 @@
         for (NSString *line in lineArray) {
             NSString *imageName = [self getSubStringFromTarget:line start:@"<image name=\"" end:@"\""];
             if (imageName) {
+                if ([imageName containsString:@".png"]) {
+                    // xib中不该指定“.png”,“@2x”等格式
+                    NSLog(@"xib wrong format [%@][%@]", imageName, xibFile);
+                }
+                
                 [imageSet addObject:imageName];
             }
         }

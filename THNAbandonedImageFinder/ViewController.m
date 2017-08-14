@@ -28,7 +28,6 @@
 }
 
 - (IBAction)clickAction:(id)sender {
-    
     NSString *path = self.textField.stringValue;
     NSDate *beginDate = [NSDate date];
     
