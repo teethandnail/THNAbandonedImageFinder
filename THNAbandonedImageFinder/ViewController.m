@@ -23,7 +23,7 @@
     [super viewDidLoad];
     self.textView.editable = NO;
     
-    self.textField.stringValue = @"/Users/HongLin/Downloads/NewCashier";
+    self.textField.stringValue = @"Input project path";
     self.textView.string = @"";
 }
 
@@ -31,11 +31,11 @@
     NSString *path = self.textField.stringValue;
     NSDate *beginDate = [NSDate date];
     
-    id result = [THNAbandonedImageFinder getAbandonedImageInEachBundleWithProjectPath:path];
+    NSMutableSet *result = [THNAbandonedImageFinder getAbandonedImageInEachBundleWithProjectPath:path];
     CGFloat runTime = [NSDate date].timeIntervalSince1970 - beginDate.timeIntervalSince1970;
     
     NSString *desc = [NSString stringWithFormat:@"耗时[%.3lf秒]", runTime];
-    self.textView.string = [NSString stringWithFormat:@"%@，废弃的图片有：\n%@", desc, result];
+    self.textView.string = [NSString stringWithFormat:@"%@，废弃的图片有[%ld]：\n%@", desc, result.count, result];
 }
 
 @end
